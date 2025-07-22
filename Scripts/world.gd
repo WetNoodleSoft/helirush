@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var chopper = preload("res://Scenes/chopper.tscn")
+@onready var chopper = preload("res://Scenes/player.tscn")
 @onready var label: Label = $CanvasLayer/Label
 @onready var player
 @onready var world: Node2D = $"."

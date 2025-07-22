@@ -1,0 +1,153 @@
+[gd_scene load_steps=14 format=3 uid="uid://b48kn57hjcjwv"]
+
+[ext_resource type="Script" uid="uid://bnkx1ktuaaghu" path="res://Scripts/motion_controller.gd" id="1_fkybt"]
+[ext_resource type="Script" uid="uid://dyrhvj7avs57v" path="res://Scripts/entity.gd" id="1_x3wgy"]
+[ext_resource type="Texture2D" uid="uid://bybnf30sn4avr" path="res://Assets/Sprites/chopper_body.png" id="2_x3wgy"]
+[ext_resource type="Texture2D" uid="uid://bsqv2dh8m4ha0" path="res://Assets/Sprites/main_rotor_sprites.png" id="3_3smsa"]
+[ext_resource type="Texture2D" uid="uid://drde11g1r6ahy" path="res://Assets/Sprites/tail_rotor_sprites.png" id="4_8erm5"]
+[ext_resource type="Texture2D" uid="uid://b81dtnyrmw5bf" path="res://Assets/Sprites/missile_sprite.png" id="5_f1ek2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k2ufw"]
+radius = 36.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fhhv0"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vq2g5"]
+animation = &"flying"
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_mrwl7"]
+graph_offset = Vector2(-444.205, 12.664)
+nodes/Animation/node = SubResource("AnimationNodeAnimation_vq2g5")
+nodes/Animation/position = Vector2(120, 200)
+nodes/output/position = Vector2(340, 220)
+node_connections = [&"output", 0, &"Animation"]
+
+[sub_resource type="Animation" id="Animation_ndiff"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainRotor:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TailRotor:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_lnx5k"]
+resource_name = "flying"
+length = 0.133337
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainRotor:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 3, 0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TailRotor:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 3, 0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_eo7ii"]
+_data = {
+&"RESET": SubResource("Animation_ndiff"),
+&"flying": SubResource("Animation_lnx5k")
+}
+
+[node name="Chopper" type="CharacterBody2D"]
+texture_filter = 1
+motion_mode = 1
+slide_on_ceiling = false
+wall_min_slide_angle = 0.0
+platform_on_leave = 2
+platform_floor_layers = 4294967040
+script = ExtResource("1_x3wgy")
+metadata/_custom_type_script = "uid://dyrhvj7avs57v"
+
+[node name="MotionController" type="Node2D" parent="."]
+script = ExtResource("1_fkybt")
+metadata/_custom_type_script = "uid://bnkx1ktuaaghu"
+
+[node name="CollisionRotor" type="CollisionShape2D" parent="."]
+z_index = -5
+position = Vector2(0, -8)
+shape = SubResource("CircleShape2D_k2ufw")
+
+[node name="CollisionBody" type="CollisionShape2D" parent="."]
+z_index = -5
+position = Vector2(0, 32)
+shape = SubResource("CircleShape2D_fhhv0")
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeBlendTree_mrwl7")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_eo7ii")
+}
+
+[node name="ChopperBody" type="Sprite2D" parent="."]
+texture = ExtResource("2_x3wgy")
+
+[node name="MainRotor" type="Sprite2D" parent="."]
+z_index = 1
+texture = ExtResource("3_3smsa")
+hframes = 4
+
+[node name="TailRotor" type="Sprite2D" parent="."]
+z_index = 1
+texture = ExtResource("4_8erm5")
+hframes = 4
+
+[node name="Missiles" type="Node2D" parent="."]
+
+[node name="Missile1" type="Sprite2D" parent="Missiles"]
+z_index = -1
+position = Vector2(-13, -10)
+texture = ExtResource("5_f1ek2")
+
+[node name="Missile2" type="Sprite2D" parent="Missiles"]
+z_index = -1
+position = Vector2(-7, -10)
+texture = ExtResource("5_f1ek2")
+
+[node name="Missile3" type="Sprite2D" parent="Missiles"]
+z_index = -1
+position = Vector2(7, -10)
+texture = ExtResource("5_f1ek2")
+
+[node name="Missile4" type="Sprite2D" parent="Missiles"]
+z_index = -1
+position = Vector2(13, -10)
+texture = ExtResource("5_f1ek2")

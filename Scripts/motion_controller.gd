@@ -1,23 +1,45 @@
-extends Node
+extends Node2D
+class_name MotionController
 
 @export var acceleration: float = 42.0
 @export var air_resistance: float = 4.5
-@onready var character: CharacterBody2D = $".."
 
-@onready var velocity = Vector2(character.velocity)
+enum entity_types{PLAYER, ENEMY, ALLY, NEUTRAL, STATIC}
+
+@onready var parent_entity: Entity = $".."
+@onready var velocity = Vector2(parent_entity.velocity)
+@onready var my_type = parent_entity.entity_type
+
+
+func _ready() -> void:
+	print(my_type)
+	pass
+
 
 func _physics_process(delta: float) -> void:
 	_get_input()
 	_decelerate(delta)
-	var collision_info: KinematicCollision2D = character.move_and_collide(velocity * delta, true)
+	var collision_info: KinematicCollision2D = parent_entity.move_and_collide(velocity * delta, true)
 	if collision_info:
 		_collision_handler(collision_info)
-	character.move_and_collide(velocity * delta)
+	parent_entity.move_and_collide(velocity * delta)
 
 
 func _get_input() -> void:
-	var input_vector = Vector2(Input.get_vector("Left", "Right", "Forward", "Back"))
-	velocity += (input_vector * acceleration * (1 + sqrt(velocity.length())/(1 + velocity.length())))
+	match my_type:
+		entity_types.PLAYER:
+			var input_vector = Vector2(Input.get_vector("Left", "Right", "Forward", "Back"))
+			velocity += (input_vector * acceleration * (1 + sqrt(velocity.length())/(1 + velocity.length())))
+			return
+		entity_types.ENEMY:
+			return
+		entity_types.ALLY:
+			return
+		entity_types.NEUTRAL:
+			return
+		entity_types.STATIC:
+			return
+	print("null type")
 	return
 	
 
